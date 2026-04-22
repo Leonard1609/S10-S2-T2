@@ -27,6 +27,20 @@ db.run(`CREATE TABLE IF NOT EXISTS productos (
 
 // ===== API ROUTES =====
 
+app.put('/api/productos/:id', (req, res) => {
+    const { nombre, precio, stock, categoria } = req.body;
+    const { id } = req.params;
+
+    const sql = 'UPDATE productos SET nombre = ?, precio = ?, stock = ?, categoria = ? WHERE id = ?';
+    
+    db.run(sql, [nombre, precio, stock, categoria, id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        if (this.changes === 0) return res.status(404).json({ error: "Producto no encontrado" });
+        
+        res.json({ message: 'Producto actualizado correctamente' });
+    });
+});
+
 // CREATE
 app.post('/api/productos', (req, res) => {
     const { nombre, precio, stock, categoria } = req.body;
@@ -60,3 +74,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Servidor en: http://localhost:3000`);
 });
+
