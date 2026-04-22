@@ -76,5 +76,5 @@ app.delete('/productos/:id', (req, res) => {
 // Iniciar Servidor
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor de Productos corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor de Productos corriendo en http://localhost:3000`);
 });
