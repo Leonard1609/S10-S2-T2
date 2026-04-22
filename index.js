@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 // Base de datos (Se creará como productos.db)
 const db = new sqlite3.Database('./productos.db', (err) => {

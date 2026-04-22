@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario de Productos</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f9; }
+        h1 { color: #333; }
+        form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input { display: block; margin: 10px 0; padding: 8px; width: 250px; }
+        button { background-color: #28a745; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #218838; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Gestión de Inventario</h1>
+    
+    <form id="productoForm">
+        <input type="text" id="nombre" placeholder="Nombre del producto" required>
+        <input type="number" id="precio" placeholder="Precio" step="0.01" required>
+        <input type="number" id="stock" placeholder="Stock" required>
+        <input type="text" id="categoria" placeholder="Categoría" required>
+        <button type="submit">Registrar Producto</button>
+    </form>
+
+    <table id="tablaProductos">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('productoForm');
+        const tabla = document.querySelector('#tablaProductos tbody');
+
+        // Función para cargar productos
+        async function cargarProductos() {
+            const res = await fetch('/productos');
+            const productos = await res.json();
+            tabla.innerHTML = '';
+            productos.forEach(p => {
+                tabla.innerHTML += `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td>${p.nombre}</td>
+                        <td>$${p.precio}</td>
+                        <td>${p.stock}</td>
+                        <td>${p.categoria}</td>
+                        <td><button onclick="eliminar(${p.id})" style="background:#dc3545">Eliminar</button></td>
+                    </tr>`;
+            });
+        }
+
+        // Registrar producto
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                nombre: document.getElementById('nombre').value,
+                precio: document.getElementById('precio').value,
+                stock: document.getElementById('stock').value,
+                categoria: document.getElementById('categoria').value
+            };
+            await fetch('/productos', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            form.reset();
+            cargarProductos();
+        });
+
+        async function eliminar(id) {
+            if(confirm('¿Seguro?')) {
+                await fetch(`/productos/${id}`, { method: 'DELETE' });
+                cargarProductos();
+            }
+        }
+
+        cargarProductos();
+    </script>
+</body>
+</html>
